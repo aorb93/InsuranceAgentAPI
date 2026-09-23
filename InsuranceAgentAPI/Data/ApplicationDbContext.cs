@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<AgentRefreshToken> AgentRefreshTokens => Set<AgentRefreshToken>();
     public DbSet<AgentLoginLog> AgentLoginLogs => Set<AgentLoginLog>();
     public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Policy> Policies => Set<Policy>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -142,6 +143,57 @@ public class ApplicationDbContext : DbContext
                 .WithMany(p => p.LoginLogs)
                 .HasForeignKey(d => d.AgentId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configuración de la entidad Policy
+        modelBuilder.Entity<Policy>(entity =>
+        {
+            entity.ToTable("Policies");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.InsuredFirstName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(p => p.InsuredLastName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(p => p.PolicyType)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(p => p.PolicyNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(p => p.Company)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(p => p.PaymentFrequency)
+                .IsRequired()
+                .HasMaxLength(30);
+
+            // Configuración de precisión decimal
+            entity.Property(p => p.NetPremium)
+                .HasPrecision(18, 2);
+
+            entity.Property(p => p.TotalPremium)
+                .HasPrecision(18, 2);
+
+            entity.Property(p => p.CommissionPercentage)
+                .HasPrecision(5, 2);
+
+            entity.Property(p => p.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            // Relación uno a muchos: Client -> Policies
+            entity.HasOne(p => p.Client)
+                .WithMany(c => c.Policies)
+                .HasForeignKey(p => p.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

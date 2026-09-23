@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Registrar IAuthService
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPolicyService, PolicyService>();
 
 // Configurar Autenticacion con JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();

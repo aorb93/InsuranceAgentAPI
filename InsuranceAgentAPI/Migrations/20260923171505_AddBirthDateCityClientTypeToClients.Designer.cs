@@ -4,6 +4,7 @@ using InsuranceAgentAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InsuranceAgentAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260923171505_AddBirthDateCityClientTypeToClients")]
+    partial class AddBirthDateCityClientTypeToClients
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,80 +254,6 @@ namespace InsuranceAgentAPI.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("InsuranceAgentAPI.Entities.Policy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("CommissionPercentage")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5, 2)");
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("InsuredBirthDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("InsuredFirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("InsuredLastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("NetPremium")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("PaymentFrequency")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("PolicyNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("PolicyType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("TotalPremium")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.ToTable("Policies", (string)null);
-                });
-
             modelBuilder.Entity("InsuranceAgentAPI.Entities.AgentLoginLog", b =>
                 {
                     b.HasOne("InsuranceAgentAPI.Entities.Agent", "Agent")
@@ -346,27 +275,11 @@ namespace InsuranceAgentAPI.Migrations
                     b.Navigation("Agent");
                 });
 
-            modelBuilder.Entity("InsuranceAgentAPI.Entities.Policy", b =>
-                {
-                    b.HasOne("InsuranceAgentAPI.Entities.Client", "Client")
-                        .WithMany("Policies")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("InsuranceAgentAPI.Entities.Agent", b =>
                 {
                     b.Navigation("LoginLogs");
 
                     b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("InsuranceAgentAPI.Entities.Client", b =>
-                {
-                    b.Navigation("Policies");
                 });
 #pragma warning restore 612, 618
         }

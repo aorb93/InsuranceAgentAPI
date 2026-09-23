@@ -49,6 +49,9 @@ public class ClientsController : ControllerBase
                 Email = c.Email,
                 Phone = c.Phone,
                 IdentificationNumber = c.IdentificationNumber,
+                BirthDate = c.BirthDate,
+                City = c.City,
+                ClientType = c.ClientType, // Guarda 1 o 2 directamente
                 IsActive = c.IsActive,
                 CreatedAt = c.CreatedAt
             })
@@ -78,6 +81,9 @@ public class ClientsController : ControllerBase
             Email = client.Email,
             Phone = client.Phone,
             IdentificationNumber = client.IdentificationNumber,
+            BirthDate = client.BirthDate,
+            City = client.City,
+            ClientType = client.ClientType,
             IsActive = client.IsActive,
             CreatedAt = client.CreatedAt
         });
@@ -100,6 +106,9 @@ public class ClientsController : ControllerBase
             Email = dto.Email,
             Phone = dto.Phone,
             IdentificationNumber = dto.IdentificationNumber,
+            BirthDate = dto.BirthDate,
+            City = dto.City,
+            ClientType = dto.ClientType, // Guarda 1 o 2 directamente
             IsActive = dto.IsActive,
             CreatedAt = DateTime.UtcNow
         };
@@ -116,6 +125,9 @@ public class ClientsController : ControllerBase
             Email = client.Email,
             Phone = client.Phone,
             IdentificationNumber = client.IdentificationNumber,
+            BirthDate = client.BirthDate,
+            City = client.City,
+            ClientType = client.ClientType,
             IsActive = client.IsActive,
             CreatedAt = client.CreatedAt
         };
@@ -140,6 +152,9 @@ public class ClientsController : ControllerBase
         client.Email = dto.Email;
         client.Phone = dto.Phone;
         client.IdentificationNumber = dto.IdentificationNumber;
+        client.BirthDate = dto.BirthDate;
+        client.City = dto.City;
+        client.ClientType = dto.ClientType;
         client.IsActive = dto.IsActive;
 
         await _context.SaveChangesAsync();

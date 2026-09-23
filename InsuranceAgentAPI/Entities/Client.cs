@@ -33,7 +33,19 @@ public class Client
     [MaxLength(20)]
     public string? IdentificationNumber { get; set; }
 
+    public DateTime? BirthDate { get; set; }
+
+    [MaxLength(100)]
+    public string? City { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public int ClientType { get; set; } = 1;
+
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Propiedad de navegación a Pólizas
+    public ICollection<Policy> Policies { get; set; } = new List<Policy>();
 }
