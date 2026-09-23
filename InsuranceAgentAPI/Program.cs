@@ -9,17 +9,17 @@ using InsuranceAgentAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Cargar y registrar la seccion JwtSettings
+// Cargar y registrar la seccion JwtSettings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
-// 2. Registrar DbContext
+// Registrar DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registrar IAuthService
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// 3. Configurar Autenticacion con JWT
+// Configurar Autenticacion con JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 var key = Encoding.UTF8.GetBytes(jwtSettings!.Key);
 
@@ -45,13 +45,24 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Agregar CORS antes de builder.Build()
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.AllowAnyOrigin() // Permite solicitudes desde cualquier dispositivo de la red local
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-// 4. Configurar Swagger para soportar el encabezado "Authorization: Bearer <token>"
+// Configurar Swagger para soportar el encabezado "Authorization: Bearer <token>"
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Insurance Agent API", Version = "v1" });
@@ -92,6 +103,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Activar CORS en el middleware (debe ir antes de UseAuthentication)
+app.UseCors("AllowAngularApp");
 
 // IMPORTANTE: UseAuthentication debe ir estrictamente ANTES de UseAuthorization
 app.UseAuthentication();

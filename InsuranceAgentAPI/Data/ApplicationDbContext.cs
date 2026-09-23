@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Agent> Agents => Set<Agent>();
     public DbSet<AgentRefreshToken> AgentRefreshTokens => Set<AgentRefreshToken>();
     public DbSet<AgentLoginLog> AgentLoginLogs => Set<AgentLoginLog>();
+    public DbSet<Client> Clients => Set<Client>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
