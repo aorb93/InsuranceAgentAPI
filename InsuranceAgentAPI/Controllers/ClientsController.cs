@@ -21,21 +21,21 @@ public class ClientsController : ControllerBase
     }
 
     // Método auxiliar para obtener el ID del agente autenticado desde el JWT
-    private int GetCurrentAgentId()
+    private string GetCurrentAgentId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("id");
-        if (claim != null && int.TryParse(claim.Value, out int agentId))
+        if (claim != null && !string.IsNullOrEmpty(claim.Value))
         {
-            return agentId;
+            return claim.Value;
         }
-        throw new UnauthorizedAccessException("Usuario no autenticado o ID no válido en el token.");
+        throw new UnauthorizedAccessException("Usuario no autenticado o token no válido.");
     }
 
     // GET: api/clients (Obtiene solo los clientes del agente autenticado)
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClientDto>>> GetClients()
     {
-        int agentId = GetCurrentAgentId();
+        string agentId = GetCurrentAgentId();
 
         var clients = await _context.Clients
             .Where(c => c.AgentId == agentId) // <-- Filtro por Agente
@@ -61,7 +61,7 @@ public class ClientsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ClientDto>> GetClient(int id)
     {
-        int agentId = GetCurrentAgentId();
+        string agentId = GetCurrentAgentId();
 
         var client = await _context.Clients
             .FirstOrDefaultAsync(c => c.Id == id && c.AgentId == agentId);
@@ -90,7 +90,7 @@ public class ClientsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        int agentId = GetCurrentAgentId();
+        string agentId = GetCurrentAgentId();
 
         var client = new Client
         {
@@ -127,7 +127,7 @@ public class ClientsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateClient(int id, [FromBody] UpdateClientDto dto)
     {
-        int agentId = GetCurrentAgentId();
+        string agentId = GetCurrentAgentId();
 
         var client = await _context.Clients
             .FirstOrDefaultAsync(c => c.Id == id && c.AgentId == agentId);
@@ -151,7 +151,7 @@ public class ClientsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteClient(int id)
     {
-        int agentId = GetCurrentAgentId();
+        string agentId = GetCurrentAgentId();
 
         var client = await _context.Clients
             .FirstOrDefaultAsync(c => c.Id == id && c.AgentId == agentId);

@@ -11,7 +11,7 @@ public class Client
 
     // ID del agente propietario (Clave foránea)
     [Required]
-    public int AgentId { get; set; }
+    public string AgentId { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(100)]
