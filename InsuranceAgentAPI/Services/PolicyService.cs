@@ -14,6 +14,7 @@ namespace InsuranceAgentAPI.Services
         Task<bool> CreatePoliciesAsync(CreateClientPoliciesDto dto);
         Task<bool> UpdatePolicyAsync(int id, UpdatePolicyDto dto);
         Task<bool> DeletePolicyAsync(int id);
+        Task<IEnumerable<PolicyResponseDto>> GetByClientGuidAsync(Guid clientGuid);
     }
 
     public class PolicyService : IPolicyService
@@ -164,5 +165,14 @@ namespace InsuranceAgentAPI.Services
             CommissionPercentage = p.CommissionPercentage,
             CreatedAt = p.CreatedAt
         };
+
+        public async Task<IEnumerable<PolicyResponseDto>> GetByClientGuidAsync(Guid clientGuid)
+        {
+            return await _context.Policies
+                .Include(p => p.Client)
+                .Where(p => p.Client != null && p.Client.Guid == clientGuid)
+                .Select(p => MapToResponseDto(p))
+                .ToListAsync();
+        }
     }
 }

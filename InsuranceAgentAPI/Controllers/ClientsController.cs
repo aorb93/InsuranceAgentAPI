@@ -43,6 +43,7 @@ public class ClientsController : ControllerBase
             .Select(c => new ClientDto
             {
                 Id = c.Id,
+                Guid = c.Guid,
                 AgentId = c.AgentId,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
@@ -178,5 +179,34 @@ public class ClientsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [HttpGet("guid/{guid:guid}")]
+    public async Task<ActionResult<ClientDto>> GetClientByGuid(Guid guid)
+    {
+        string agentId = GetCurrentAgentId();
+
+        var client = await _context.Clients
+            .FirstOrDefaultAsync(c => c.Guid == guid && c.AgentId == agentId);
+
+        if (client == null)
+            return NotFound(new { message = "Asegurado no encontrado o no autorizado" });
+
+        return Ok(new ClientDto
+        {
+            Id = client.Id,
+            Guid = client.Guid,
+            AgentId = client.AgentId,
+            FirstName = client.FirstName,
+            LastName = client.LastName,
+            Email = client.Email,
+            Phone = client.Phone,
+            IdentificationNumber = client.IdentificationNumber,
+            BirthDate = client.BirthDate,
+            City = client.City,
+            ClientType = client.ClientType,
+            IsActive = client.IsActive,
+            CreatedAt = client.CreatedAt
+        });
     }
 }

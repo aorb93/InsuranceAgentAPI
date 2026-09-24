@@ -145,6 +145,22 @@ public class ApplicationDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull);
         });
 
+        // ==========================================
+        // Configuración: Client
+        // ==========================================
+        modelBuilder.Entity<Client>(entity =>
+        {
+            entity.ToTable("Clients");
+
+            entity.HasKey(c => c.Id);
+
+            entity.Property(c => c.Guid)
+                .HasDefaultValueSql("NEWSEQUENTIALID()")
+                .IsRequired();
+
+            entity.HasIndex(c => c.Guid).IsUnique();
+        });
+
         // Configuración de la entidad Policy
         modelBuilder.Entity<Policy>(entity =>
         {

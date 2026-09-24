@@ -5,6 +5,7 @@ namespace InsuranceAgentAPI.DTOs;
 public class ClientDto
 {
     public int Id { get; set; }
+    public Guid Guid { get; set; }
     public string AgentId { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

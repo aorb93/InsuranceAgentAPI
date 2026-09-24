@@ -98,5 +98,12 @@ namespace InsuranceAgentAPI.Controllers
 
             return Ok(new { message = "Póliza eliminada exitosamente." });
         }
+
+        [HttpGet("client/guid/{clientGuid:guid}")]
+        public async Task<IActionResult> GetByClientGuid(Guid clientGuid)
+        {
+            var policies = await _policyService.GetByClientGuidAsync(clientGuid);
+            return Ok(policies);
+        }
     }
 }
