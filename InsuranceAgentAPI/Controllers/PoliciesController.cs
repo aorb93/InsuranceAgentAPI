@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using InsuranceAgentAPI.DTOs;
 using InsuranceAgentAPI.Services;
 
 namespace InsuranceAgentAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class PoliciesController : ControllerBase
@@ -15,30 +18,45 @@ namespace InsuranceAgentAPI.Controllers
             _policyService = policyService;
         }
 
+        // Método auxiliar para obtener el ID del agente autenticado desde el JWT
+        private string GetCurrentAgentId()
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("id");
+            if (claim != null && !string.IsNullOrEmpty(claim.Value))
+            {
+                return claim.Value;
+            }
+            throw new UnauthorizedAccessException("Usuario no autenticado o token no válido.");
+        }
+
         // GET: api/policies
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var policies = await _policyService.GetAllAsync();
+            string agentId = GetCurrentAgentId();
+            var policies = await _policyService.GetAllAsync(agentId);
             return Ok(policies);
         }
 
-        // GET: api/policies/5
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        // GET: api/policies/{guid}
+        [HttpGet("{guid:guid}")]
+        public async Task<IActionResult> GetByGuid(Guid guid)
         {
-            var policy = await _policyService.GetByIdAsync(id);
+            string agentId = GetCurrentAgentId();
+            var policy = await _policyService.GetByGuidAsync(guid, agentId);
             if (policy == null)
-                return NotFound(new { message = $"No se encontró la póliza con ID {id}." });
+                return NotFound(new { message = $"No se encontró la póliza con GUID {guid} o no tiene autorización para acceder a ella." });
 
             return Ok(policy);
         }
 
-        // GET: api/policies/client/10
-        [HttpGet("client/{clientId:int}")]
-        public async Task<IActionResult> GetByClientId(int clientId)
+        // GET: api/policies/client/{clientGuid}
+        [HttpGet("client/{clientGuid:guid}")]
+        [HttpGet("client/guid/{clientGuid:guid}")]
+        public async Task<IActionResult> GetByClientGuid(Guid clientGuid)
         {
-            var policies = await _policyService.GetByClientIdAsync(clientId);
+            string agentId = GetCurrentAgentId();
+            var policies = await _policyService.GetByClientGuidAsync(clientGuid, agentId);
             return Ok(policies);
         }
 
@@ -48,13 +66,14 @@ namespace InsuranceAgentAPI.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var createdPolicy = await _policyService.CreateSinglePolicyAsync(dto);
+            string agentId = GetCurrentAgentId();
+            var createdPolicy = await _policyService.CreateSinglePolicyAsync(dto, agentId);
             if (createdPolicy == null)
             {
-                return BadRequest(new { message = "No se pudo crear la póliza. Verifique que el cliente exista." });
+                return BadRequest(new { message = "No se pudo crear la póliza. Verifique que el cliente exista y pertenezca a su cuenta." });
             }
 
-            return CreatedAtAction(nameof(GetById), new { id = createdPolicy.Id }, createdPolicy);
+            return CreatedAtAction(nameof(GetByGuid), new { guid = createdPolicy.Guid }, createdPolicy);
         }
 
         // POST: api/policies/bulk
@@ -66,44 +85,40 @@ namespace InsuranceAgentAPI.Controllers
                 return BadRequest(new { message = "La solicitud contiene datos no válidos o la lista de pólizas está vacía." });
             }
 
-            var result = await _policyService.CreatePoliciesAsync(dto);
+            string agentId = GetCurrentAgentId();
+            var result = await _policyService.CreatePoliciesAsync(dto, agentId);
             if (!result)
             {
-                return BadRequest(new { message = "No se pudieron registrar las pólizas. Verifique que el cliente exista." });
+                return BadRequest(new { message = "No se pudieron registrar las pólizas. Verifique que el cliente exista y pertenezca a su cuenta." });
             }
 
             return Ok(new { message = "Póliza(s) guardada(s) exitosamente." });
         }
 
-        // PUT: api/policies/5
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdatePolicyDto dto)
+        // PUT: api/policies/{guid}
+        [HttpPut("{guid:guid}")]
+        public async Task<IActionResult> Update(Guid guid, [FromBody] UpdatePolicyDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = await _policyService.UpdatePolicyAsync(id, dto);
+            string agentId = GetCurrentAgentId();
+            var result = await _policyService.UpdatePolicyByGuidAsync(guid, dto, agentId);
             if (!result)
-                return NotFound(new { message = $"No se encontró la póliza con ID {id} para actualizar." });
+                return NotFound(new { message = $"No se encontró la póliza con GUID {guid} para actualizar o no tiene autorización." });
 
             return Ok(new { message = "Póliza actualizada exitosamente." });
         }
 
-        // DELETE: api/policies/5
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        // DELETE: api/policies/{guid}
+        [HttpDelete("{guid:guid}")]
+        public async Task<IActionResult> Delete(Guid guid)
         {
-            var result = await _policyService.DeletePolicyAsync(id);
+            string agentId = GetCurrentAgentId();
+            var result = await _policyService.DeletePolicyByGuidAsync(guid, agentId);
             if (!result)
-                return NotFound(new { message = $"No se encontró la póliza con ID {id} para eliminar." });
+                return NotFound(new { message = $"No se encontró la póliza con GUID {guid} para eliminar o no tiene autorización." });
 
             return Ok(new { message = "Póliza eliminada exitosamente." });
-        }
-
-        [HttpGet("client/guid/{clientGuid:guid}")]
-        public async Task<IActionResult> GetByClientGuid(Guid clientGuid)
-        {
-            var policies = await _policyService.GetByClientGuidAsync(clientGuid);
-            return Ok(policies);
         }
     }
 }

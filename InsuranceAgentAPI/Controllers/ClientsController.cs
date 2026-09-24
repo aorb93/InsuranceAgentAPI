@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -61,14 +61,15 @@ public class ClientsController : ControllerBase
         return Ok(clients);
     }
 
-    // GET: api/clients/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ClientDto>> GetClient(int id)
+    // GET: api/clients/{guid}
+    [HttpGet("{guid:guid}")]
+    [HttpGet("guid/{guid:guid}")]
+    public async Task<ActionResult<ClientDto>> GetClient(Guid guid)
     {
         string agentId = GetCurrentAgentId();
 
         var client = await _context.Clients
-            .FirstOrDefaultAsync(c => c.Id == id && c.AgentId == agentId);
+            .FirstOrDefaultAsync(c => c.Guid == guid && c.AgentId == agentId);
 
         if (client == null)
             return NotFound(new { message = "Asegurado no encontrado o no autorizado" });
@@ -76,6 +77,7 @@ public class ClientsController : ControllerBase
         return Ok(new ClientDto
         {
             Id = client.Id,
+            Guid = client.Guid,
             AgentId = client.AgentId,
             FirstName = client.FirstName,
             LastName = client.LastName,
@@ -120,6 +122,7 @@ public class ClientsController : ControllerBase
         var clientDto = new ClientDto
         {
             Id = client.Id,
+            Guid = client.Guid,
             AgentId = client.AgentId,
             FirstName = client.FirstName,
             LastName = client.LastName,
@@ -133,17 +136,17 @@ public class ClientsController : ControllerBase
             CreatedAt = client.CreatedAt
         };
 
-        return CreatedAtAction(nameof(GetClient), new { id = client.Id }, clientDto);
+        return CreatedAtAction(nameof(GetClient), new { guid = client.Guid }, clientDto);
     }
 
-    // PUT: api/clients/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateClient(int id, [FromBody] UpdateClientDto dto)
+    // PUT: api/clients/{guid}
+    [HttpPut("{guid:guid}")]
+    public async Task<IActionResult> UpdateClient(Guid guid, [FromBody] UpdateClientDto dto)
     {
         string agentId = GetCurrentAgentId();
 
         var client = await _context.Clients
-            .FirstOrDefaultAsync(c => c.Id == id && c.AgentId == agentId);
+            .FirstOrDefaultAsync(c => c.Guid == guid && c.AgentId == agentId);
 
         if (client == null)
             return NotFound(new { message = "Asegurado no encontrado o no autorizado" });
@@ -163,26 +166,9 @@ public class ClientsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/clients/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteClient(int id)
-    {
-        string agentId = GetCurrentAgentId();
-
-        var client = await _context.Clients
-            .FirstOrDefaultAsync(c => c.Id == id && c.AgentId == agentId);
-
-        if (client == null)
-            return NotFound(new { message = "Asegurado no encontrado o no autorizado" });
-
-        _context.Clients.Remove(client);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    [HttpGet("guid/{guid:guid}")]
-    public async Task<ActionResult<ClientDto>> GetClientByGuid(Guid guid)
+    // DELETE: api/clients/{guid}
+    [HttpDelete("{guid:guid}")]
+    public async Task<IActionResult> DeleteClient(Guid guid)
     {
         string agentId = GetCurrentAgentId();
 
@@ -192,21 +178,9 @@ public class ClientsController : ControllerBase
         if (client == null)
             return NotFound(new { message = "Asegurado no encontrado o no autorizado" });
 
-        return Ok(new ClientDto
-        {
-            Id = client.Id,
-            Guid = client.Guid,
-            AgentId = client.AgentId,
-            FirstName = client.FirstName,
-            LastName = client.LastName,
-            Email = client.Email,
-            Phone = client.Phone,
-            IdentificationNumber = client.IdentificationNumber,
-            BirthDate = client.BirthDate,
-            City = client.City,
-            ClientType = client.ClientType,
-            IsActive = client.IsActive,
-            CreatedAt = client.CreatedAt
-        });
+        _context.Clients.Remove(client);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }

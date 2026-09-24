@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InsuranceAgentAPI.Entities
@@ -6,6 +6,8 @@ namespace InsuranceAgentAPI.Entities
     public class Policy
     {
         public int Id { get; set; }
+
+        public Guid Guid { get; set; } = Guid.NewGuid();
 
         public int ClientId { get; set; }
 

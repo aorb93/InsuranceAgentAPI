@@ -1,4 +1,4 @@
-﻿using InsuranceAgentAPI.Entities;
+using InsuranceAgentAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace InsuranceAgentAPI.Data;
@@ -167,6 +167,12 @@ public class ApplicationDbContext : DbContext
             entity.ToTable("Policies");
 
             entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Guid)
+                .HasDefaultValueSql("NEWSEQUENTIALID()")
+                .IsRequired();
+
+            entity.HasIndex(p => p.Guid).IsUnique();
 
             entity.Property(p => p.InsuredFirstName)
                 .IsRequired()
