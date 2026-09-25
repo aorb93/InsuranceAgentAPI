@@ -15,6 +15,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<AgentLoginLog> AgentLoginLogs => Set<AgentLoginLog>();
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<Policy> Policies => Set<Policy>();
+    public DbSet<PolicyType> PolicyTypes => Set<PolicyType>();
+    public DbSet<PaymentFrequency> PaymentFrequencies => Set<PaymentFrequency>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -217,5 +219,22 @@ public class ApplicationDbContext : DbContext
                 .HasForeignKey(p => p.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        // Seed de Tipos de Póliza
+        modelBuilder.Entity<PolicyType>().HasData(
+            new PolicyType { Id = 1, Name = "Vida", IsActive = true },
+            new PolicyType { Id = 2, Name = "Gastos Médicos", IsActive = true },
+            new PolicyType { Id = 3, Name = "Auto", IsActive = true },
+            new PolicyType { Id = 4, Name = "Daños", IsActive = true },
+            new PolicyType { Id = 5, Name = "Hogar", IsActive = true }
+        );
+
+        // Seed de Periodicidades de Pago
+        modelBuilder.Entity<PaymentFrequency>().HasData(
+            new PaymentFrequency { Id = 1, Name = "Mensual", IsActive = true },
+            new PaymentFrequency { Id = 2, Name = "Trimestral", IsActive = true },
+            new PaymentFrequency { Id = 3, Name = "Semestral", IsActive = true },
+            new PaymentFrequency { Id = 4, Name = "Anual", IsActive = true }
+        );
     }
 }
