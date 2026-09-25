@@ -52,11 +52,26 @@ public class DashboardController : ControllerBase
             .Where(p => p.Client != null && p.Client.AgentId == agentId && p.EndDate >= today && p.EndDate <= nextMonth)
             .CountAsync();
 
+        // 4. Obtener primas netas y comisiones de las pólizas del agente
+        var policyFinancials = await _context.Policies
+            .Where(p => p.Client != null && p.Client.AgentId == agentId)
+            .Select(p => new
+            {
+                NetPremium = p.NetPremium,
+                CommissionPercentage = p.CommissionPercentage
+            })
+            .ToListAsync();
+
+        var totalNetPremium = policyFinancials.Sum(p => p.NetPremium);
+        var totalCommissions = policyFinancials.Sum(p => p.NetPremium * (p.CommissionPercentage / 100m));
+
         return Ok(new DashboardMetricsDto
         {
             TotalActiveClients = totalActiveClients,
             ActivePolicies = activePolicies,
-            ExpiringPolicies = expiringPolicies
+            ExpiringPolicies = expiringPolicies,
+            TotalNetPremium = totalNetPremium,
+            TotalCommissions = totalCommissions
         });
     }
 }
