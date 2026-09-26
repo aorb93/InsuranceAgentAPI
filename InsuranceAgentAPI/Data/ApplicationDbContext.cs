@@ -184,10 +184,6 @@ public class ApplicationDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100);
 
-            entity.Property(p => p.PolicyType)
-                .IsRequired()
-                .HasMaxLength(50);
-
             entity.Property(p => p.PolicyNumber)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -195,10 +191,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(p => p.Company)
                 .IsRequired()
                 .HasMaxLength(100);
-
-            entity.Property(p => p.PaymentFrequency)
-                .IsRequired()
-                .HasMaxLength(30);
 
             // Configuración de precisión decimal
             entity.Property(p => p.NetPremium)
@@ -218,6 +210,36 @@ public class ApplicationDbContext : DbContext
                 .WithMany(c => c.Policies)
                 .HasForeignKey(p => p.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(p => p.PolicyType)
+                .WithMany()
+                .HasForeignKey(p => p.PolicyTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(p => p.PaymentFrequency)
+                .WithMany()
+                .HasForeignKey(p => p.PaymentFrequencyId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ==========================================
+        // Configuración: PolicyType
+        // ==========================================
+        modelBuilder.Entity<PolicyType>(entity =>
+        {
+            entity.ToTable("PolicyType");
+
+            entity.HasKey(pt => pt.Id);
+        });
+
+        // ==========================================
+        // Configuración: PaymentFrequency
+        // ==========================================
+        modelBuilder.Entity<PaymentFrequency>(entity =>
+        {
+            entity.ToTable("PaymentFrequency");
+
+            entity.HasKey(pf => pf.Id);
         });
 
         // Seed de Tipos de Póliza

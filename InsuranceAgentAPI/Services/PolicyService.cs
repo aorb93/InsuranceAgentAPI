@@ -30,6 +30,8 @@ namespace InsuranceAgentAPI.Services
         {
             return await _context.Policies
                 .Include(p => p.Client)
+                .Include(p => p.PolicyType)
+                .Include(p => p.PaymentFrequency)
                 .Where(p => p.Client != null && p.Client.AgentId == agentId)
                 .Select(p => MapToResponseDto(p))
                 .ToListAsync();
@@ -40,6 +42,8 @@ namespace InsuranceAgentAPI.Services
         {
             var policy = await _context.Policies
                 .Include(p => p.Client)
+                .Include(p => p.PolicyType)
+                .Include(p => p.PaymentFrequency)
                 .FirstOrDefaultAsync(p => p.Guid == guid && p.Client != null && p.Client.AgentId == agentId);
 
             return policy == null ? null : MapToResponseDto(policy);
@@ -50,6 +54,8 @@ namespace InsuranceAgentAPI.Services
         {
             return await _context.Policies
                 .Include(p => p.Client)
+                .Include(p => p.PolicyType)
+                .Include(p => p.PaymentFrequency)
                 .Where(p => p.Client != null && p.Client.Guid == clientGuid && p.Client.AgentId == agentId)
                 .Select(p => MapToResponseDto(p))
                 .ToListAsync();
@@ -79,10 +85,10 @@ namespace InsuranceAgentAPI.Services
                 InsuredFirstName = dto.InsuredFirstName,
                 InsuredLastName = dto.InsuredLastName,
                 InsuredBirthDate = dto.InsuredBirthDate,
-                PolicyType = dto.PolicyType,
+                PolicyTypeId = dto.PolicyTypeId,
                 PolicyNumber = dto.PolicyNumber,
                 Company = dto.Company,
-                PaymentFrequency = dto.PaymentFrequency,
+                PaymentFrequencyId = dto.PaymentFrequencyId,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
                 NetPremium = dto.NetPremium,
@@ -121,10 +127,10 @@ namespace InsuranceAgentAPI.Services
                 InsuredFirstName = p.InsuredFirstName,
                 InsuredLastName = p.InsuredLastName,
                 InsuredBirthDate = p.InsuredBirthDate,
-                PolicyType = p.PolicyType,
+                PolicyTypeId = p.PolicyTypeId,
                 PolicyNumber = p.PolicyNumber,
                 Company = p.Company,
-                PaymentFrequency = p.PaymentFrequency,
+                PaymentFrequencyId = p.PaymentFrequencyId,
                 StartDate = p.StartDate,
                 EndDate = p.EndDate,
                 NetPremium = p.NetPremium,
@@ -148,10 +154,10 @@ namespace InsuranceAgentAPI.Services
             policy.InsuredFirstName = dto.InsuredFirstName;
             policy.InsuredLastName = dto.InsuredLastName;
             policy.InsuredBirthDate = dto.InsuredBirthDate;
-            policy.PolicyType = dto.PolicyType;
+            policy.PolicyTypeId = dto.PolicyTypeId;
             policy.PolicyNumber = dto.PolicyNumber;
             policy.Company = dto.Company;
-            policy.PaymentFrequency = dto.PaymentFrequency;
+            policy.PaymentFrequencyId = dto.PaymentFrequencyId;
             policy.StartDate = dto.StartDate;
             policy.EndDate = dto.EndDate;
             policy.NetPremium = dto.NetPremium;
@@ -184,10 +190,12 @@ namespace InsuranceAgentAPI.Services
             InsuredFirstName = p.InsuredFirstName,
             InsuredLastName = p.InsuredLastName,
             InsuredBirthDate = p.InsuredBirthDate,
-            PolicyType = p.PolicyType,
+            PolicyType = p.PolicyType != null ? p.PolicyType.Name : string.Empty,
+            PolicyTypeId = p.PolicyTypeId,
             PolicyNumber = p.PolicyNumber,
             Company = p.Company,
-            PaymentFrequency = p.PaymentFrequency,
+            PaymentFrequency = p.PaymentFrequency != null ? p.PaymentFrequency.Name : string.Empty,
+            PaymentFrequencyId = p.PaymentFrequencyId,
             StartDate = p.StartDate,
             EndDate = p.EndDate,
             NetPremium = p.NetPremium,

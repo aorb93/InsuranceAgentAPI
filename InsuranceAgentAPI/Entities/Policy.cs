@@ -21,9 +21,8 @@ namespace InsuranceAgentAPI.Entities
 
         public DateTime? InsuredBirthDate { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string PolicyType { get; set; } = string.Empty;
+        public int PolicyTypeId { get; set; }
+        public PolicyType? PolicyType { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -33,9 +32,8 @@ namespace InsuranceAgentAPI.Entities
         [MaxLength(100)]
         public string Company { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(30)]
-        public string PaymentFrequency { get; set; } = string.Empty;
+        public int PaymentFrequencyId { get; set; }
+        public PaymentFrequency? PaymentFrequency { get; set; }
 
         public DateTime StartDate { get; set; }
 

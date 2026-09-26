@@ -4,6 +4,7 @@ using InsuranceAgentAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InsuranceAgentAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260925232949_AddPolicyCatalogsFK")]
+    partial class AddPolicyCatalogsFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -356,16 +359,20 @@ namespace InsuranceAgentAPI.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("PaymentFrequencyId")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentFrequency")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("PolicyNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("PolicyTypeId")
-                        .HasColumnType("int");
+                    b.Property<string>("PolicyType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -380,10 +387,6 @@ namespace InsuranceAgentAPI.Migrations
 
                     b.HasIndex("Guid")
                         .IsUnique();
-
-                    b.HasIndex("PaymentFrequencyId");
-
-                    b.HasIndex("PolicyTypeId");
 
                     b.ToTable("Policies", (string)null);
                 });
@@ -470,23 +473,7 @@ namespace InsuranceAgentAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InsuranceAgentAPI.Entities.PaymentFrequency", "PaymentFrequency")
-                        .WithMany()
-                        .HasForeignKey("PaymentFrequencyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("InsuranceAgentAPI.Entities.PolicyType", "PolicyType")
-                        .WithMany()
-                        .HasForeignKey("PolicyTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Client");
-
-                    b.Navigation("PaymentFrequency");
-
-                    b.Navigation("PolicyType");
                 });
 
             modelBuilder.Entity("InsuranceAgentAPI.Entities.Agent", b =>

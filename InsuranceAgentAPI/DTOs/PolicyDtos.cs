@@ -12,9 +12,11 @@ namespace InsuranceAgentAPI.DTOs
         public string InsuredLastName { get; set; } = string.Empty;
         public DateTime? InsuredBirthDate { get; set; }
         public string PolicyType { get; set; } = string.Empty;
+        public int PolicyTypeId { get; set; }
         public string PolicyNumber { get; set; } = string.Empty;
         public string Company { get; set; } = string.Empty;
         public string PaymentFrequency { get; set; } = string.Empty;
+        public int PaymentFrequencyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal NetPremium { get; set; }
@@ -31,10 +33,10 @@ namespace InsuranceAgentAPI.DTOs
         public string InsuredFirstName { get; set; } = string.Empty;
         public string InsuredLastName { get; set; } = string.Empty;
         public DateTime? InsuredBirthDate { get; set; }
-        public string PolicyType { get; set; } = string.Empty;
+        public int PolicyTypeId { get; set; }
         public string PolicyNumber { get; set; } = string.Empty;
         public string Company { get; set; } = string.Empty;
-        public string PaymentFrequency { get; set; } = string.Empty;
+        public int PaymentFrequencyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal NetPremium { get; set; }
@@ -56,10 +58,10 @@ namespace InsuranceAgentAPI.DTOs
         public string InsuredFirstName { get; set; } = string.Empty;
         public string InsuredLastName { get; set; } = string.Empty;
         public DateTime? InsuredBirthDate { get; set; }
-        public string PolicyType { get; set; } = string.Empty;
+        public int PolicyTypeId { get; set; }
         public string PolicyNumber { get; set; } = string.Empty;
         public string Company { get; set; } = string.Empty;
-        public string PaymentFrequency { get; set; } = string.Empty;
+        public int PaymentFrequencyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal NetPremium { get; set; }
