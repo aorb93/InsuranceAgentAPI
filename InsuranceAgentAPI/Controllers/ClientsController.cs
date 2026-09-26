@@ -54,7 +54,17 @@ public class ClientsController : ControllerBase
                 City = c.City,
                 ClientType = c.ClientType, // Guarda 1 o 2 directamente
                 IsActive = c.IsActive,
-                CreatedAt = c.CreatedAt
+                CreatedAt = c.CreatedAt,
+
+                // Proyección del grupo de pólizas asociadas al cliente
+                PolicySummaries = c.Policies
+                    .GroupBy(p => p.PolicyType.Name)
+                    .Select(g => new PolicyTypeSummaryDto
+                    {
+                        PolicyTypeName = g.Key,
+                        Count = g.Count()
+                    })
+                .ToList()
             })
             .ToListAsync();
 

@@ -17,6 +17,9 @@ public class ClientDto
     public int ClientType { get; set; } = 1; // 1 = Cliente, 2 = Prospecto
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    // Listado del conteo de pólizas agrupadas por tipo
+    public List<PolicyTypeSummaryDto> PolicySummaries { get; set; } = new();
 }
 
 public class CreateClientDto
@@ -73,4 +76,10 @@ public class UpdateClientDto
     public int ClientType { get; set; } = 1;
 
     public bool IsActive { get; set; }
+}
+
+public class PolicyTypeSummaryDto
+{
+    public string PolicyTypeName { get; set; } = string.Empty;
+    public int Count { get; set; }
 }
